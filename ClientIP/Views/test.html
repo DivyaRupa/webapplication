@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title> </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+
+    <script  type="text/javascript">
+
+       var app = angular.module("myShoppingList", []);
+
+        app.controller('myCtrl', function ($scope, ms) {
+            loadData();
+            function loadData() {
+                $scope.loading = true;
+
+                //The controller call the function from the service
+                var promiseGetData = ms.getData();
+                //Callback with success and failure
+                promiseGetData.then(function (res) {
+                    $scope.loading = false;
+                    $scope.IPAdds = res.data;
+                    console.log($scope.IPAdds);
+
+                }, function (err) {
+                    $scope.loading = false;
+                    $scope.ErrorMessage = "Call failed" + err.status + "  " + err.statusText;
+
+                });
+            }
+
+            function UpdateCurrentDataOnBrowserExit()
+            {
+                alert("On Update Close");
+                //The controller call the function from the service
+                var promiseGetData = msupdate.UpdateCurrentIPData();
+                //Callback with success and failure
+                promiseGetData.then(function (res) {
+                      console.log(res.data);
+
+                }, function (err) {
+                    $scope.ErrorMessage = "Call failed" + err.status + "  " + err.statusText;
+
+                });
+
+            }
+
+
+        });
+
+
+        //The service with the get method. 
+            app.service('ms', function ($http) {
+                this.getData = function () {
+                    var resp = $http.get("/api/IPAddressAPI/");
+                    return resp;
+                };
+            });
+
+        //
+            app.service('msupdate', function ($http) {
+                this.UpdateCurrentIPData = function () {
+                    var resp = $http.put("/api/IPAddressAPI/");
+                    return resp;
+                };
+            });
+    
+    </script>
+    <style>
+        .textdanger {
+        color:red
+        }
+        .loading {
+        color:blue;
+        background-color :yellow;
+        }
+    </style>
+</head>
+<body ng-app="myShoppingList" ng-controller="myCtrl" onbeforeunload="UpdateCurrentDataOnBrowserExit()">
+    <h1> List of IPAddress </h1>
+    <div>
+        <div ng-hide="loading">
+
+            <table border="1">
+                <tr>
+                    <td>ID</td>
+                    <td>IP Address </td>
+                    <td>Is Active </td>
+                </tr>
+                <tr ng-repeat="IPAdd in IPAdds">
+                    <td>{{IPAdd.Id}}</td>
+                    <td>{{IPAdd.IPAdd}}</td>
+                    <td>{{IPAdd.IsActive}}</td>
+                </tr>
+            </table>
+        </div>
+        <div ng-show="loading" class="loading">Loading -------------</div>
+        <div class="textdanger"> {{ErrorMessage}}</div>
+    </div>
+
+
+</body>
+</html>
+

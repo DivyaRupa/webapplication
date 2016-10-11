@@ -1,0 +1,17 @@
+﻿<html>
+<head>
+    <title>Detect Browser Exit</title>
+    <script type="text/javascript" language="Javascript">
+
+        function DetectBrowserExit() {
+            alert('Execute task which do you want before exit');
+        }
+
+        window.onbeforeunload = function () { DetectBrowserExit(); }
+
+    </script>
+</head>
+<body>
+    Detect Browser Exit
+</body>
+</html>
